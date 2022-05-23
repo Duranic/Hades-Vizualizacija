@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="http://d3js.org/d3.v7.min.js"></script>
+</head>
+<style>
+    body {
+        background-color: #2A2A2A;
+        margin: 0;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px rgb(70, 70, 70);
+        border-radius: 5px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: rgb(128, 0, 0);
+        border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #5e0000;
+    }
+
+    p {
+        color: #FFF;
+    }
+</style>
+
+<body>
+    <script>
+        var width = innerWidth - 10;
+        var height = 0.35 * width;
+        var cardWidth = width / 9;
+        var imageHeight = ((width / 9) * 1.25);
+        var data = {
+            "gods": [
+                {
+                    "id": "0",
+                    "name": "Zeus",
+                    "color": "#8a8a2d",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "1",
+                    "name": "Poseidon",
+                    "color": "#306c61",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "2",
+                    "name": "Athena",
+                    "color": "#827d44",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "3",
+                    "name": "Aphrodite",
+                    "color": "#ab4d9a",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "4",
+                    "name": "Artemis",
+                    "color": "#36823c",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "5",
+                    "name": "Ares",
+                    "color": "#5e1f1f",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "6",
+                    "name": "Dionysus",
+                    "color": "#46274a",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "7",
+                    "name": "Hermes",
+                    "color": "#8c4829",
+                    "boon": "Maxima"
+                },
+                {
+                    "id": "8",
+                    "name": "Demeter",
+                    "color": "#5e4278",
+                    "boon": "Maxima"
+                }
+            ]
+        };
+        console.log(data.gods);
+        var clicked = false;
+        //data = d3.json("data.json", function (d) { console.log(d); })
+
+        d3.selection.prototype.moveToFront = function () { return this.each(function () { this.parentNode.appendChild(this); }); };
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .on("mouseleave", function () {
+                if (clicked) {
+                    clicked = false;
+                    d3.selectAll(".rects")
+                        .each(function (d, i) {
+                            d3.select("#id" + i)
+                                .transition()
+                                .duration(400)
+                                .attr("x", i * cardWidth)
+                                .attr("width", cardWidth + 1)
+                            d3.select("#imgid" + i)
+                                .transition()
+                                .duration(400)
+                                .attr("x", i * cardWidth)
+                                .attr("y", height - imageHeight)
+                                .attr("width", cardWidth + 1)
+                                .attr("height", imageHeight + 1)
+                        })
+                }
+            })
+            .append("g")
+        var g = svg.selectAll("g")
+            .data(data.gods)
+            .enter()
+        g.append("rect")
+            .classed("rects", true)
+            .attr('id', (d, i) => { return "id" + i; })
+            .attr('x', function (d, i) { return i * cardWidth; })
+            .attr('y', 0)
+            .attr('width', cardWidth + 1)
+            .attr('height', height)
+            .attr('stroke-width', 0)
+            .attr('fill', function (d) { return d.color })
+            .on("click", (e, d) => selectGod(d))
+        g.append("svg:image")
+            .classed("images", true)
+            .attr('id', (d, i) => { return "imgid" + i; })
+            .attr('x', function (d, i) { return i * cardWidth; })
+            .attr('y', height - imageHeight)
+            .attr('width', cardWidth)
+            .attr('height', imageHeight+1)
+            .attr("xlink:href", function (d) { return "resources/images/" + d.name + ".png" })
+            .on("click", (e, d) => selectGod(d))
+        d3.selectAll("p")
+            .data(data.gods)
+            .enter()
+            .append("p")
+            .text(function (d) { return d.name; })
+            .append("p")
+            .text(function (d) { return d.name; })
+
+
+
+        function selectGod(god) {
+            if (!clicked) {
+                clicked = true;
+                d3.select("#id" + god.id)
+                    .moveToFront()
+                    .transition()
+                    .duration(500)
+                    .attr("x", 0)
+                    .attr("width", width)
+                    .transition()
+                d3.select("#imgid" + god.id)
+                    .moveToFront()
+                    .transition()
+                    .duration(500)
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", height * 0.8 + 1)
+                    .attr("height", height+1)
+
+            }
+            else {
+                clicked = false;
+                d3.select("#id" + god.id)
+                    .transition()
+                    .duration(400)
+                    .attr("x", god.id * cardWidth)
+                    .attr("width", cardWidth + 1)
+                    .transition()
+                d3.select("#imgid" + god.id)
+                    .transition()
+                    .duration(400)
+                    .attr("x", god.id * cardWidth)
+                    .attr("y", height - imageHeight)
+                    .attr("width", cardWidth + 1)
+                    .attr("height", imageHeight + 1)
+
+            }
+        }
+
+    </script>
+</body>
+
+</html>

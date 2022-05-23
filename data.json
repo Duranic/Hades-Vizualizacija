@@ -1,0 +1,58 @@
+{
+    "gods": [
+        {
+            "id": "0",
+            "name": "Zeus",
+            "color": "#8a8a2d",
+            "boon": "Maxima"
+        },
+        {
+            "id": "1",
+            "name": "Poseidon",
+            "color": "#306c61",
+            "boon": "Maxima"
+        },
+        {
+            "id": "2",
+            "name": "Athena",
+            "color": "#827d44",
+            "boon": "Maxima"
+        },
+        {
+            "id": "3",
+            "name": "Aphrodite",
+            "color": "#ab4d9a",
+            "boon": "Maxima"
+        },
+        {
+            "id": "4",
+            "name": "Artemis",
+            "color": "#36823c",
+            "boon": "Maxima"
+        },
+        {
+            "id": "5",
+            "name": "Ares",
+            "color": "#5e1f1f",
+            "boon": "Maxima"
+        },
+        {
+            "id": "6",
+            "name": "Dionysus",
+            "color": "#46274a",
+            "boon": "Maxima"
+        },
+        {
+            "id": "7",
+            "name": "Hermes",
+            "color": "#8c4829",
+            "boon": "Maxima"
+        },
+        {
+            "id": "8",
+            "name": "Demeter",
+            "color": "#5e4278",
+            "boon": "Maxima"
+        }
+    ]
+}
