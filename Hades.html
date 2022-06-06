@@ -4,15 +4,64 @@
 <head>
     <script src="http://d3js.org/d3.v7.min.js"></script>
 </head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caesar+Dressing&family=EB+Garamond&family=Spectral+SC&display=swap"
+    rel="stylesheet">
 <style>
     body {
         background-color: #2A2A2A;
         margin: 0;
     }
 
+    img {
+        margin: 20px;
+        margin-right: 50px;
+        margin-bottom: 10px;
+        height: 60px;
+        width: auto;
+    }
+
+    .title {
+        background-color: #0f0f0f;
+        color: #FFF;
+        display: flex;
+    }
+
+    h1 {
+        font-family: "Spectral SC", serif;
+        margin-top: 20px;
+        display: flex;
+    }
+
+    text {
+        fill: #eee;
+    }
+
+    .names {
+        font-family: "Caesar dressing", serif;
+        font-size: 35px;
+    }
+
+    .node {
+        font-family: "EB Garamond", sans-serif;
+        font-size: 17px;
+    }
+
+    .boonG {
+        font-family: "EB Garamond", sans-serif;
+        font-size: 16px;
+    }
+
+    .link {
+        fill: none;
+        stroke: #999;
+        stroke-width: 1.5px;
+    }
+
     ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
+        width: 5px;
+        height: 5px;
     }
 
     /* Track */
@@ -32,109 +81,1818 @@
         background: #5e0000;
     }
 
-    p {
-        color: #FFF;
+    h2 {
+        color: #DDD;
+        margin: 10px;
+        font-family: "Caesar dressing", sans-serif;
+        font-size: 30px;
+    }
+
+    pre {
+        color: #DDD;
+        margin: 30px;
+        font-family: "EB Garamond", sans-serif;
+        font-size: 20px;
     }
 </style>
 
 <body>
     <script>
-        var width = innerWidth - 10;
+        var width = innerWidth - 5;
         var height = 0.35 * width;
         var cardWidth = width / 9;
-        var imageHeight = ((width / 9) * 1.25);
+        var cardImageHeight = ((width / 9) * 1.25);
+        var selectedImageHeight = height * 0.58
+        var selectedImageWidth = selectedImageHeight * 0.8
+        var boonSize = width * 0.043;
+        var treeWidth = width * 0.5
+        var spacing = width / 76
+        var clicked = false;
         var data = {
             "gods": [
                 {
                     "id": "0",
                     "name": "Zeus",
-                    "color": "#8a8a2d",
-                    "boon": "Maxima"
+                    "color": "#747419",
+                    "description": `Zeus is the god of the sky and thunder, and the ruler of the Olympian Gods.
+He offers boons to Zagreus which give his abilities chain lightning or lightning strikes.
+
+Zeus boons excel at dealing damage to groups of enemies, as chain lightning effects bounce between enemies, and lightning strikes can hit multiple enemies.
+His signature Status Curse is Jolted, which causes enemies to inflict damage to themselves when they attack, consuming the Curse.`,
+                    "boons": [
+
+                        {
+                            "name": "Heaven's Vengeance",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Zeus' Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements",
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Clouded Judgment",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Electric Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Lightning Reflexes",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "High Voltage",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Zeus' Aid"
+                                        },
+                                        {
+                                            "name": "Thunder Flourish"
+                                        },
+                                        {
+                                            "name": "Thunder Dash"
+                                        },
+                                        {
+                                            "name": "Thunder Flare"
+                                        }
+
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Double Strike",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Zeus' Aid"
+                                        },
+                                        {
+                                            "name": "Thunder Flourish"
+                                        },
+                                        {
+                                            "name": "Thunder Dash"
+                                        }
+                                        ,
+                                        {
+                                            "name": "Thunder Flare"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Lightning Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Static Discharge",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Lightning Reflexes"
+                                        },
+                                        {
+                                            "name": "Zeus' Aid"
+                                        },
+                                        {
+                                            "name": "Thunder Flourish"
+                                        },
+                                        {
+                                            "name": "Thunder Dash"
+                                        },
+                                        {
+                                            "name": "Thunder Flare"
+                                        },
+                                        {
+                                            "name": "Heaven's Vengeance"
+                                        },
+                                        {
+                                            "name": "Lightning Strike"
+                                        },
+                                        {
+                                            "name": "Electric Shot"
+                                        }
+
+
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Splitting Bolt",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Storm Lightning"
+                                        },
+                                        {
+                                            "name": "High Voltage"
+                                        },
+                                        {
+                                            "name": "Double Strike"
+                                        }
+
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Storm Lightning",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Lightning Strike"
+                                        },
+                                        {
+                                            "name": "Electric Shot"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Thunder Dash",
+                            "children": [
+
+                                {
+                                    "name": "no requirements"
+                                }
+
+                            ]
+                        },
+                        {
+                            "name": "Thunder Flare",
+                            "children": [
+                                {
+
+                                    "name": "Aspect of Beowulf"
+
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Thunder Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "1",
                     "name": "Poseidon",
-                    "color": "#306c61",
-                    "boon": "Maxima"
+                    "color": "#276055",
+                    "description": `Poseidon is the god of the sea. He offers boons to Zagreus that significantly increase the damage of his abilities, as well as cause his abilities to inflict Knockback.
+Poseidon boons offers the 3rd highest raw percentage damage increase in Hades, as well as the ability to knock enemies around, dealing extra wall slam or trap damage.
+
+Poseidon boons are among the only to offer Artifact currencies and increase their rate of acquisition. Only Dionysus shares this trait.
+His signature Status Curse is Ruptured, which rapidly deals damage to enemies as they move. Ruptured not only affects an enemy's movement, but also affects the movement from various other Knockback effects.`,
+                    "boons": [
+                        {
+                            "name": "Poseidon's Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Flood Flare",
+                            "children": [
+                                {
+
+                                    "name": "Aspect of Beowulf"
+
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Flood Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Boiling Point",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Poseidon's Aid"
+                                        },
+                                        {
+                                            "name": "Any other call"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Breaking Wave",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Tempest Strike"
+                                        },
+                                        {
+                                            "name": "Flood Shot"
+                                        },
+                                        {
+                                            "name": "Flood Flare"
+                                        },
+                                        {
+                                            "name": "Tidal Dash"
+                                        },
+                                        {
+                                            "name": "Tempest Flourish"
+                                        },
+                                        {
+                                            "name": "Poseidon's Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Razor Shoals",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Tempest Strike"
+                                        },
+                                        {
+                                            "name": "Flood Shot"
+                                        },
+                                        {
+                                            "name": "Flood Flare"
+                                        },
+                                        {
+                                            "name": "Tidal Dash"
+                                        },
+                                        {
+                                            "name": "Tempest Flourish"
+                                        },
+                                        {
+                                            "name": "Poseidon's Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Rip Current",
+                            "children": [
+                                {
+                                    "name": "Poseidon's Aid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Second Wave",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Breaking Wave"
+                                        },
+                                        {
+                                            "name": "Typhoon's Fury"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Wave Pounding",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Tempest Strike"
+                                        },
+                                        {
+                                            "name": "Flood Shot"
+                                        },
+                                        {
+                                            "name": "Flood Flare"
+                                        },
+                                        {
+                                            "name": "Tidal Dash"
+                                        },
+                                        {
+                                            "name": "Tempest Flourish"
+                                        },
+                                        {
+                                            "name": "Poseidon's Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Typhoon's Fury",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Tempest Strike"
+                                        },
+                                        {
+                                            "name": "Flood Shot"
+                                        },
+                                        {
+                                            "name": "Flood Flare"
+                                        },
+                                        {
+                                            "name": "Tidal Dash"
+                                        },
+                                        {
+                                            "name": "Tempest Flourish"
+                                        },
+                                        {
+                                            "name": "Poseidon's Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hydraulic Might",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Tempest Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Tempest Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Tidal Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "2",
                     "name": "Athena",
-                    "color": "#827d44",
-                    "boon": "Maxima"
+                    "color": "#5f5c35",
+                    "description": `Athena is the Olympian Goddess of wisdom and strategic warfare. She offers boons to Zagreus that cause his abilities to Deflect enemy attacks. In addition, she also offers boons that reduce damage or increase other defensive options.
+Athena offers excellent defensive options with her boons, protecting you from damage with the ability to deflect enemy projectiles and melee attacks, as well as reduce the damage you will take in a run.
+
+Her signature Status Curse is Exposed, which causes enemies to take additional damage from behind. This stacks with Backstab bonuses offered by the Mirror of Night.
+As her boon is the reward for clearing the very first room in a fresh save, she will always be the first of the Olympian gods to be encountered`,
+                    "boons": [
+                        {
+                            "name": "Athena's Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Sure Footing",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Bronze Skin",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Deathless Stand",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Phalanx Shot"
+                                        },
+                                        {
+                                            "name": "Divine Strike"
+                                        },
+                                        {
+                                            "name": "Divine Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Blinding Flash",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Phalanx Flare"
+                                        },
+                                        {
+                                            "name": "Phalanx Shot"
+                                        },
+                                        {
+                                            "name": "Divine Strike"
+                                        },
+                                        {
+                                            "name": "Holy Shield"
+                                        },
+                                        {
+                                            "name": "Divine Dash"
+                                        },
+                                        {
+                                            "name": "Divine Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Brilliant Riposte",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Divine Strike"
+                                        },
+                                        {
+                                            "name": "Holy Shield"
+                                        },
+                                        {
+                                            "name": "Divine Dash"
+                                        },
+                                        {
+                                            "name": "Divine Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Divine Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Divine Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Divine Protection",
+                            "children": [
+                                {
+                                    "name": "Brilliant Riposte"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Proud Bearing",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Athena's Aid"
+                                        },
+                                        {
+                                            "name": "Any other call"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Last Stand",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Phalanx Shot"
+                                        },
+                                        {
+                                            "name": "Divine Strike"
+                                        },
+                                        {
+                                            "name": "Divine Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Divine Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Holy Shield",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Phalanx Flare",
+                            "children": [
+                                {
+                                    "name": "Aspect of Beowulf"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Phalanx Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "3",
                     "name": "Aphrodite",
-                    "color": "#ab4d9a",
-                    "boon": "Maxima"
+                    "color": "#843075",
+                    "description": `Aphrodite is the Olympian Goddess of love and beauty. She offers boons to Zagreus that inflict her signature Status Curse, Weak, or make enemies more susceptible to damage.
+Aphrodite boons not only increase your damage significantly, offering the largest additive damage boosts for your Attack and Special, but also your survivability, making enemy attacks less effective as you fight them.
+Due to Weak effects being easy to inflict, Aphrodite also enables synergy with the Mirror of Night Upgrade, Privileged Status.
+
+Her signature Status Curse is Weak, which reduces the damage afflicted enemies do by 30%. Aphrodite also offers boons which increase the effectiveness of her Status Curse itself, such as Empty Inside (which increases the effect's duration).
+Aphrodite is one of five Olympian gods (the other four being Demeter, Poseidon, Hermes and Zeus) who will not appear in the very first run of a save.`,
+                    "boons": [
+                        {
+                            "name": "Aphrodite's Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Crush Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Different League",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Dying Lament",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Broken Resolve",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Crush Shot"
+                                        },
+                                        {
+                                            "name": "Heartbreak Strike"
+                                        },
+                                        {
+                                            "name": "Passion Flare"
+                                        },
+                                        {
+                                            "name": "Passion Dash"
+                                        },
+                                        {
+                                            "name": "Heartbreak Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Empty Inside",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Crush Shot"
+                                        },
+                                        {
+                                            "name": "Heartbreak Strike"
+                                        },
+                                        {
+                                            "name": "Passion Flare"
+                                        },
+                                        {
+                                            "name": "Passion Dash"
+                                        },
+                                        {
+                                            "name": "Heartbreak Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Sweet Surrender",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Crush Shot"
+                                        },
+                                        {
+                                            "name": "Heartbreak Strike"
+                                        },
+                                        {
+                                            "name": "Passion Flare"
+                                        },
+                                        {
+                                            "name": "Passion Dash"
+                                        },
+                                        {
+                                            "name": "Heartbreak Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Blown Kiss",
+                            "children": [
+                                {
+                                    "name": "Crush Shot"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Unhealthy Fixation",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Empty Inside"
+                                        },
+                                        {
+                                            "name": "Sweet Surrender"
+                                        },
+                                        {
+                                            "name": "Broken Resolve"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Passion Flare",
+                            "children": [
+                                {
+                                    "name": "Aspect of Beowulf"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Heartbreak Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Passion Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Heartbreak Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Life Affirmation",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Wave of Despair",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "4",
                     "name": "Artemis",
-                    "color": "#36823c",
-                    "boon": "Maxima"
+                    "color": "#1f5b24",
+                    "description": `Artemis is the Olympian Goddess of the hunt and the wilderness. She offers boons to Zagreus which give his abilities the chance to deal Critical damage. In addition, she also offers boons that improve Cast abilities.
+While the damage bonus offered on her boons is lower compared to other Gods', the Critical hits they offer deal three times the damage of a normal ability, granting the best overall DPS gain.
+Artemis boons, when properly combined with other boons, have the potential to deal tremendous damage. In addition, her Cast related boons increase your total ammo or add a projectile, further enabling a powerful ranged tool.
+
+Her signature Status Curse is Marked, which increases the chance of dealing a critical hit to the afflicted enemy, consuming the Curse and reapplying it to a nearby target.
+This essentially allows you to snowball critical hits in a crowd. This increase in chance will stack with her boons that offer Critical hit chance.`,
+                    "boons": [
+                        {
+                            "name": "Artemis' Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Deadly Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Deadly Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Exit Wounds",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "True Shot"
+                                        },
+                                        {
+                                            "name": "Zeus, Aphrodite, Athena or Poseidon's cast"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Fully Loaded",
+                            "children": [
+                                {
+                                    "name": "requires any two of",
+                                    "children": [
+                                        {
+                                            "name": "Support Fire"
+                                        },
+                                        {
+                                            "name": "Exit Wounds"
+                                        },
+                                        {
+                                            "name": "Pressure Points"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hide Breaker",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "True Shot"
+                                        },
+                                        {
+                                            "name": "Pressure Points"
+                                        },
+                                        {
+                                            "name": "Deadly Flourish"
+                                        },
+                                        {
+                                            "name": "Deadly Strike"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hunter Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hunter Instinct",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "True Shot"
+                                        },
+                                        {
+                                            "name": "Pressure Points"
+                                        },
+                                        {
+                                            "name": "Deadly Flourish"
+                                        },
+                                        {
+                                            "name": "Deadly Strike"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Artemis' Aid"
+                                        },
+                                        {
+                                            "name": "Any other call"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Clean Kill",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "True Shot"
+                                        },
+                                        {
+                                            "name": "Pressure Points"
+                                        },
+                                        {
+                                            "name": "Deadly Flourish"
+                                        },
+                                        {
+                                            "name": "Deadly Strike"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Support Fire",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "True Shot"
+                                        },
+                                        {
+                                            "name": "Pressure Points"
+                                        },
+                                        {
+                                            "name": "Deadly Flourish"
+                                        },
+                                        {
+                                            "name": "Deadly Strike"
+                                        },
+                                        {
+                                            "name": "Hunter Dash"
+                                        },
+                                        {
+                                            "name": "Hunter's Flare"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hunter's Mark",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "True Shot"
+                                        },
+                                        {
+                                            "name": "Pressure Points"
+                                        },
+                                        {
+                                            "name": "Deadly Flourish"
+                                        },
+                                        {
+                                            "name": "Deadly Strike"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Pressure Points",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "True Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hunter's Flare",
+                            "children": [
+                                {
+                                    "name": "Aspect of Beowulf",
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "5",
                     "name": "Ares",
                     "color": "#5e1f1f",
-                    "boon": "Maxima"
+                    "description": `Ares is the Olympian God of war. Unlike the more strategically-oriented Athena, Ares' domain is the physical, violent, and untamed aspects of warfare.
+He offers boons to Zagreus, which can increase his ability damage, inflict his signature Status Curse, Doom, or create Blade Rifts which deal rapid damage to enemies who walk into them.
+
+Ares boons deal high amounts of damage over time, either by keeping enemies inside Blade Rifts, or by continuously applying Doom to enemies.
+His signature Status Curse is Doom, which causes enemies to take a large amount of damage shortly after being inflicted, consuming the Curse.
+Ares also offers boons which increase the effectiveness of his Status Curse itself, such as Dire Misfortune`,
+                    "boons": [
+                        {
+                            "name": "Ares' Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Battle Rage",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Vicious Cycle",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Black Metal"
+                                        },
+                                        {
+                                            "name": "Engulfing Vortex"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Black Metal",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Slicing Flare"
+                                        },
+                                        {
+                                            "name": "Slicing Shot"
+                                        },
+                                        {
+                                            "name": "Blade Dash"
+                                        },
+                                        {
+                                            "name": "Ares' Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Engulfing Vortex",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Slicing Flare"
+                                        },
+                                        {
+                                            "name": "Slicing Shot"
+                                        },
+                                        {
+                                            "name": "Blade Dash"
+                                        },
+                                        {
+                                            "name": "Ares' Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Blade Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Blood Frenzy",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Curse of Agony",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Curse of Pain",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Curse of Vengeance",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Dire Misfortune",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Curse of Agony"
+                                        },
+                                        {
+                                            "name": "Curse of Pain"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Impending Doom",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Curse of Agony"
+                                        },
+                                        {
+                                            "name": "Curse of Pain"
+                                        },
+                                        {
+                                            "name": "Curse of Vengeance"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Slicing Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Slicing Flare",
+                            "children": [
+                                {
+                                    "name": "Aspect of Beowulf"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Urge to Kill",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "6",
                     "name": "Dionysus",
                     "color": "#46274a",
-                    "boon": "Maxima"
+                    "description": `Dionysus is the Olympian God of wine and madness, and cousin to Zagreus.
+He offers boons to Zagreus revolving around his signature Status Curse, Hangover, slowing, and stunning enemies, as well as various drinking-themed Boons.
+Dionysus offers strong damage over time abilities on nearly all his offensive boons. However, he can also give Zagreus strong utility abilities in the forms of stuns, slows, heals and health, damage reduction effects, and items.
+
+His signature Status Curse is Hangover, which deals continuous damage to afflicted enemies every half second. Hangover can be stacked onto an enemy up to a base amount of 5 times, and stacks wear off one at a time after 4 seconds.`,
+                    "boons": [
+                        {
+                            "name": "After Party",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Dionysus' Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Drunken Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Drunken Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Drunken Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Black Out",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Drunken Strike"
+                                        },
+                                        {
+                                            "name": "Drunken Dash"
+                                        },
+                                        {
+                                            "name": "Drunken Flourish"
+                                        },
+                                        {
+                                            "name": "Dionysus' Aid"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Trippy Flare"
+                                        },
+                                        {
+                                            "name": "Trippy Shot"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "High Tolerance",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Trippy Flare"
+                                        },
+                                        {
+                                            "name": "Trippy Shot"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Bad Influence",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Drunken Strike"
+                                        },
+                                        {
+                                            "name": "Drunken Dash"
+                                        },
+                                        {
+                                            "name": "Drunken Flourish"
+                                        },
+                                        {
+                                            "name": "Dionysus' Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Numbing Sensation",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Drunken Strike"
+                                        },
+                                        {
+                                            "name": "Drunken Dash"
+                                        },
+                                        {
+                                            "name": "Drunken Flourish"
+                                        },
+                                        {
+                                            "name": "Dionysus' Aid"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Peer Pressure",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Drunken Strike"
+                                        },
+                                        {
+                                            "name": "Drunken Dash"
+                                        },
+                                        {
+                                            "name": "Drunken Flourish"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Positive Outlook",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Premium Vintage",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Strong Drink",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Trippy Flare",
+                            "children": [
+                                {
+                                    "name": "Aspect of Beowulf"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Trippy Shot",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "7",
                     "name": "Hermes",
                     "color": "#8c4829",
-                    "boon": "Maxima"
+                    "description": `Hermes is the Olympian God of commerce, trickery, and travel, as well as the messenger of the gods and conductor of souls into the afterlife (called a psychopomp).
+He offers boons that enhance Zagreus's speed in various ways. His boons can also improve Zagreus's dash and cast recovery.
+
+Hermes is one of five Olympian gods (the other four being Demeter, Zeus, Poseidon and Aphrodite) who will not appear in the very first run of a save.`,
+                    "boons": [
+                        {
+                            "name": "Flurry Cast",
+                            "children": [
+                                {
+                                    "name": "Mirror - Infernal Soul"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Greater Evasion",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Greater Haste",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Greater Recall",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Quick Reload"
+                                        },
+                                        {
+                                            "name": "Flurry Cast"
+                                        },
+                                        {
+                                            "name": "Lambent Plume"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Greatest Reflex",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hyper Sprint",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Quick Favor",
+                            "children": [
+                                {
+                                    "name": "Any God's aid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Quick Recovery",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Quick Reload",
+                            "children": [
+                                {
+                                    "name": "Mirror - Infernal Soul"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Rush Delivery",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Hyper Sprint"
+                                        },
+                                        {
+                                            "name": "Greater Haste"
+                                        },
+                                        {
+                                            "name": "Lambent Plume"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Second Wind",
+                            "children": [
+                                {
+                                    "name": "Any God's aid"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Side Hustle",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Swift Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Swift Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "id": "8",
                     "name": "Demeter",
                     "color": "#5e4278",
-                    "boon": "Maxima"
+                    "description": `Demeter is the goddess of agriculture as well as sacred law and the cycle of life and death, the giver of life and in turn, the taker of it.
+Many of the boons she offers to Zagreus inflict her signature Status Curse, Chill, which causes enemies to slow down and, possibly, shatter, spreading the Curse.
+In addition to that, she offers the 2nd highest raw percentage damage increase. Her other boons vary between helping survivability by healing, increasing damage, or boosting your different boons over time by increasing their rarity.
+
+Demeter boons excel at control, as Chill slows enemies down the more Zagreus strikes them. Since Chill is easy to stack and maintain, this also enables good synergy with the Mirror of Night Upgrade, Privileged Status.`,
+                    "boons": [
+                        {
+                            "name": "Crystal Beam",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Icy Flare",
+                            "children": [
+                                {
+                                    "name": "Aspect of Beowulf"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Demeter's Aid",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Frost Flourish",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Arctic Blast",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Frost Strike"
+                                        },
+                                        {
+                                            "name": "Mistral Dash"
+                                        },
+                                        {
+                                            "name": "Frost Flourish"
+                                        },
+                                        {
+                                            "name": "Demeter's Aid"
+                                        },
+                                        {
+                                            "name": "Snow Burst"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Killing Freeze",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Frost Strike"
+                                        },
+                                        {
+                                            "name": "Mistral Dash"
+                                        },
+                                        {
+                                            "name": "Frost Flourish"
+                                        },
+                                        {
+                                            "name": "Demeter's Aid"
+                                        },
+                                        {
+                                            "name": "Snow Burst"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Winter Harvest",
+                            "children": [
+                                {
+                                    "name": "requires any of",
+                                    "children": [
+                                        {
+                                            "name": "Killing Freeze"
+                                        },
+                                        {
+                                            "name": "Arctic Blast"
+                                        },
+                                        {
+                                            "name": "Ravenous Will"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Frost Strike",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Frozen Touch",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Glacial Glare",
+                            "children": [
+                                {
+                                    "name": "Crystal Beam"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Mistral Dash",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Nourished Soul",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Rare Crop",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Ravenous Will",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Snow Burst",
+                            "children": [
+                                {
+                                    "name": "no requirements"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
-        };
-        console.log(data.gods);
-        var clicked = false;
-        //data = d3.json("data.json", function (d) { console.log(d); })
+        }
+
 
         d3.selection.prototype.moveToFront = function () { return this.each(function () { this.parentNode.appendChild(this); }); };
-
-        var svg = d3.select("body").append("svg")
+        var boonG
+        var centerOffset
+        div = d3.select("body").append("div").classed("title",true)
+        div.append("img").attr("src", "resources/images/white logo.png")
+        div.append("h1").text("BOON REQUIREMENTS")
+        var g = d3.select("body").append("svg")
             .attr("width", width)
             .attr("height", height)
-            .on("mouseleave", function () {
-                if (clicked) {
-                    clicked = false;
-                    d3.selectAll(".rects")
-                        .each(function (d, i) {
-                            d3.select("#id" + i)
-                                .transition()
-                                .duration(400)
-                                .attr("x", i * cardWidth)
-                                .attr("width", cardWidth + 1)
-                            d3.select("#imgid" + i)
-                                .transition()
-                                .duration(400)
-                                .attr("x", i * cardWidth)
-                                .attr("y", height - imageHeight)
-                                .attr("width", cardWidth + 1)
-                                .attr("height", imageHeight + 1)
-                        })
-                }
-            })
             .append("g")
-        var g = svg.selectAll("g")
+        var gEnter = g.selectAll("g")
             .data(data.gods)
             .enter()
-        g.append("rect")
+        gEnter.append("rect")
             .classed("rects", true)
             .attr('id', (d, i) => { return "id" + i; })
             .attr('x', function (d, i) { return i * cardWidth; })
@@ -144,22 +1902,31 @@
             .attr('stroke-width', 0)
             .attr('fill', function (d) { return d.color })
             .on("click", (e, d) => selectGod(d))
-        g.append("svg:image")
+        gEnter.append("svg:image")
             .classed("images", true)
             .attr('id', (d, i) => { return "imgid" + i; })
             .attr('x', function (d, i) { return i * cardWidth; })
-            .attr('y', height - imageHeight)
+            .attr('y', height - cardImageHeight)
             .attr('width', cardWidth)
-            .attr('height', imageHeight+1)
-            .attr("xlink:href", function (d) { return "resources/images/" + d.name + ".png" })
+            .attr('height', cardImageHeight + 1)
+            .attr("xlink:href", function (d) { return "resources/images/gods/" + d.name + ".png" })
             .on("click", (e, d) => selectGod(d))
-        d3.selectAll("p")
+        gEnter.append("text")
+            .classed("names", true)
+            .attr('id', (d, i) => { return "nameid" + i; })
+            .attr("dx", function (d, i) { return i * cardWidth + cardWidth / 2; })
+            .attr("text-anchor", "middle")
+            .attr("dy", 50)
+            .text(function (d) { return d.name })
+        enter=d3.selectAll("h2")
             .data(data.gods)
             .enter()
-            .append("p")
+            .append("div")
+        enter.append("h2")
             .text(function (d) { return d.name; })
-            .append("p")
-            .text(function (d) { return d.name; })
+        enter.append("pre")
+            .text(function (d) { return d.description; })
+        enter.append("br")
 
 
 
@@ -178,9 +1945,15 @@
                     .transition()
                     .duration(500)
                     .attr("x", 0)
-                    .attr("y", 0)
-                    .attr("width", height * 0.8 + 1)
-                    .attr("height", height+1)
+                    .attr("y", height - selectedImageHeight)
+                    .attr("width", selectedImageWidth + 1)
+                    .attr("height", selectedImageHeight + 1)
+                    .on("end", (d) => showBoons(d))
+                d3.select("#nameid" + god.id)
+                    .moveToFront()
+                    .transition()
+                    .duration(500)
+                    .attr("dx", selectedImageWidth / 2)
 
             }
             else {
@@ -195,11 +1968,197 @@
                     .transition()
                     .duration(400)
                     .attr("x", god.id * cardWidth)
-                    .attr("y", height - imageHeight)
+                    .attr("y", height - cardImageHeight)
                     .attr("width", cardWidth + 1)
-                    .attr("height", imageHeight + 1)
+                    .attr("height", cardImageHeight + 1)
+                d3.select("#nameid" + god.id)
+                    .transition()
+                    .duration(400)
+                    .attr("dx", god.id * cardWidth + cardWidth / 2)
+                d3.selectAll(".boons")
+                    .transition()
+                    .duration(100)
+                    .attr("opacity", 0)
+                    .on("end", function () {
+                        d3.selectAll(".boonG").remove()
+                    })
+                d3.selectAll(".tree").remove()
+
 
             }
+        }
+
+        function showBoons(god) {
+            const index = d3.local();
+            boonG = d3.selectAll("svg")
+                .append("g")
+                .classed("boonG", true)
+            boon = boonG.selectAll("g")
+                .data(god.boons)
+                .enter()
+                .append("g")
+            console.log(god.name)
+            boon.append("svg:image")
+                .classed("boons", true)
+                .attr('id', (d, i) => { return "boonid" + i; })
+                .attr('x', function (d, i) { return selectedImageWidth + i * (boonSize + spacing); })
+                .attr('y', 20)
+                .attr('width', boonSize)
+                .attr('height', boonSize)
+                .attr("xlink:href", function (d) { return "resources/images/boons/" + god.name + "/" + d.name + ".png" })
+                .each(function (d, i) { index.set(this, i); })
+                .on("mouseover", function (e, d) {
+                    boonTree(d, index.get(this))
+                })
+                .on("mouseleave", function () {
+                    resetBoons()
+                    var id = index.get(this)
+                    d3.selectAll("#nodeid" + id)
+                        .transition()
+                        .duration(300)
+                        .attr("opacity", 0)
+                        .on("end", function () {
+                            this.remove()
+                        })
+
+                    d3.selectAll("#linkid" + id)
+                        .transition()
+                        .duration(300)
+                        .attr("opacity", 0)
+                        .on("end", function () {
+                            this.remove()
+                        })
+                })
+                .transition()
+                .duration(100)
+                .attr("opacity", 1)
+            boon.append("text")
+                .classed("texts", true)
+                .attr('x', function (d, i) { return selectedImageWidth + i * (boonSize + spacing) + boonSize / 2; })
+                .attr("y", boonSize + 40)
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d.name;
+                })
+
+            boonG = d3.select(".boonG")
+            centerOffset = (width - (boonG.node().getBBox().width + selectedImageWidth)) / 2
+            boonG.attr("transform", function () {
+                return "translate(" + centerOffset + "," + 0 + ")"
+            })
+        }
+
+        function boonTree(boon, id) {
+            var svg = d3.selectAll("svg")
+            var treemap = d3.tree()
+                .size([treeWidth, height * 0.6]);
+            var nodes = d3.hierarchy(boon),
+                links = nodes.descendants().slice(1);
+            nodes = treemap(nodes);
+            var g = svg.append("g")
+                .classed("tree", true)
+                .attr("id", "treeid" + id)
+            var link = g.selectAll(".link")
+                .data(links)
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("id", "linkid" + id)
+                .style("stroke", function (d) { return d.data.level; })
+                .attr("d", function (d) { return diagonal(d); })
+                .attr("opacity", 1)
+            var node = g.selectAll(".node")
+                .data(nodes.descendants())
+                .enter()
+                .append("g")
+                .attr("class", "node")
+                .attr("id", "nodeid" + id)
+                .attr("opacity", 1)
+                .attr("transform", function (d) {
+                    if (d.depth == 0) {
+                        g.attr("transform", "translate(" + (selectedImageWidth + centerOffset + id * (boonSize + spacing) + boonSize / 2 - d.x) + "," + (20 + boonSize) + ")");
+                    }
+                    else {
+                        var val = g.attr('transform').split(/[\s,()]+/);
+                        const treex = parseFloat(val[1]);
+                        var name = d.data.name
+                        var x = d.x
+                        var y = d.y
+                        d3.selectAll(".boons").each(function (d) {
+                            if (d.name == name) {
+                                d3.select(this).transition()
+                                    .duration(300)
+                                    .attr("x", function () { return treex - centerOffset - boonSize / 2 + x })
+                                    .attr("y", y + boonSize + 20)
+                            }
+                        })
+                        d3.selectAll(".texts").each(function (d) {
+                            if (d.name == name) {
+                                d3.select(this).transition()
+                                    .duration(300)
+                                    .attr("x", function () { return treex - centerOffset + x })
+                                    .attr("y", y + 2 * boonSize + 40)
+                            }
+                        })
+                    }
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+
+            node.append("text")
+                .attr("dy", function (d) {
+                    isBoon = false
+                    var name = d.data.name
+                    d3.selectAll(".boons").each(function (d) {
+                        if (d.name == name) {
+                            isBoon = true
+                        }
+                    })
+
+                    if (isBoon) { return boonSize + 10; }
+                    else if (d.height == 0) { return boonSize / 2; }
+                    else return -10
+                })
+                .attr("dx", function (d) {
+                    if (d.depth == 1 && d.children != null) {
+                        return 70;
+                    }
+                })
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    isBoon = false
+                    var name = d.data.name
+                    d3.selectAll(".boons").each(function (d) {
+                        if (d.name == name) {
+                            isBoon = true
+                        }
+                    })
+
+                    if (!isBoon) return d.data.name;
+                });
+        }
+
+        function resetBoons() {
+            d3.selectAll(".boons").each(function (d, i) {
+                d3.select(this).transition()
+                    .duration(300)
+                    .attr('x', selectedImageWidth + i * (boonSize + spacing))
+                    .attr("y", 20)
+            })
+            d3.selectAll(".texts").each(function (d, i) {
+                d3.select(this).transition()
+                    .duration(300)
+                    .attr('x', selectedImageWidth + i * (boonSize + spacing) + boonSize / 2)
+                    .attr("y", 40 + boonSize)
+            })
+        }
+
+        function diagonal(d) {
+            return "M" + d.x + "," + d.y
+                + "C" + d.x + "," + (d.y + d.parent.y) / 2
+                + " " + d.parent.x + "," + (d.y + d.parent.y) / 2
+                + " " + d.parent.x + "," + d.parent.y;
+
+
         }
 
     </script>
